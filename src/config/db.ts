@@ -10,12 +10,12 @@ const initDB = async () => {
     CREATE TABLE IF NOT EXISTS users(
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL ,
+    password VARCHAR(100) NOT NULL CHECK (char_length(password) >= 6),
     phone VARCHAR(20) NOT NULL,
-    role VARCHAR(20) DEFAULT 'customer',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    role VARCHAR(20) NOT NULL DEFAULT 'customer' CHECK (role IN ('admin', 'customer')),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
   )
   `);
 };

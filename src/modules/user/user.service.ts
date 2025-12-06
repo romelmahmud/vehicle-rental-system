@@ -18,7 +18,7 @@ const getAllUsers = async () => {
 };
 
 const updateUser = async (id: string, data: Record<string, any>) => {
-  const allowedFields = ["name", "email", "phone", "role"];
+  const allowedFields = ["name", "phone", "role"];
   const setClauses: string[] = [];
   const values: any[] = [];
   let index = 1;

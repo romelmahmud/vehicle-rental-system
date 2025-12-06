@@ -3,9 +3,9 @@
 import { Request, Response } from "express";
 import { authServices } from "./auth.service";
 
-const registerUser = async (req: Request, res: Response) => {
+const signupUser = async (req: Request, res: Response) => {
   try {
-    const result = await authServices.registerUser(req.body);
+    const result = await authServices.signupUser(req.body);
 
     // console.log(result.rows[0]);
     res.status(201).json({
@@ -21,10 +21,10 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-const signInUser = async (req: Request, res: Response) => {
+const signinUser = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const result = await authServices.signInUser(email, password);
+    const result = await authServices.signinUser(email, password);
 
     res.status(200).json({
       success: true,
@@ -39,6 +39,6 @@ const signInUser = async (req: Request, res: Response) => {
   }
 };
 export const authControllers = {
-  registerUser,
-  signInUser,
+  signinUser,
+  signupUser,
 };

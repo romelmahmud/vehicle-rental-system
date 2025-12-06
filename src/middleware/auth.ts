@@ -7,18 +7,18 @@ const auth = (...roles: Array<"admin" | "customer">) => {
     try {
       const token = req.headers.authorization;
       if (!token) {
-        return res
-          .status(401)
-          .json({
-            success: false,
-            message: "Access denied: No token provided",
-          });
+        return res.status(401).json({
+          success: false,
+          message: "Access denied: No token provided",
+        });
       }
-      const decoded = jwt.verify(
-        token,
-        config.jwtSecret as string
-      ) as jwt.JwtPayload;
-      console.log(decoded);
+      const decoded = jwt.verify(token, config.jwtSecret as string) as {
+        id: string;
+        name: string;
+        email: string;
+        role: "admin" | "customer";
+      };
+      // console.log(decoded);
       req.user = decoded;
 
       if (roles.length && !roles.includes(decoded.role)) {

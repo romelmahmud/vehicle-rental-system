@@ -8,7 +8,7 @@ const getAllUsers = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "users fetched successfully",
-      data: result.rows,
+      data: result,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -19,6 +19,49 @@ const getAllUsers = async (req: Request, res: Response) => {
   }
 };
 
+const updateUser = async (req: Request, res: Response) => {
+  // to make sure logged in user is not undefined
+  if (!req.user) {
+    return res.status(401).json({
+      success: false,
+      message: "Unauthorized: No user logged in",
+    });
+  }
+  const targetUserId = req.params.id;
+  const loggedInUser = req.user;
+
+  // Checking if user updating own profile
+  if (loggedInUser.role === "customer" && loggedInUser.id !== targetUserId) {
+    return res.status(403).json({
+      success: false,
+      message: "Customers can only update their own profile",
+    });
+  }
+  // Checking if admin is trying to update role
+  if (req.body.role && loggedInUser?.role !== "admin") {
+    return res.status(403).json({
+      success: false,
+      message: "Only admins can update user roles",
+    });
+  }
+  try {
+    const result = await userServices.updateUser(
+      req.params.id as string,
+      req.body
+    );
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: result.rows[0],
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 export const userControllers = {
   getAllUsers,
+  updateUser,
 };

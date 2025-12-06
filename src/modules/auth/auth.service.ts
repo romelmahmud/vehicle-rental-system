@@ -12,7 +12,7 @@ type RegisterUserPayload = {
   phone: string;
 };
 
-const registerUser = async (payload: RegisterUserPayload) => {
+const signupUser = async (payload: RegisterUserPayload) => {
   const { name, role, email, password, phone } = payload;
   if (password.length < 6) {
     throw new Error("Password must be at least 6 characters long");
@@ -30,7 +30,7 @@ const registerUser = async (payload: RegisterUserPayload) => {
   return result;
 };
 
-const signInUser = async (email: string, password: string) => {
+const signinUser = async (email: string, password: string) => {
   const result = await pool.query(`SELECT * FROM users WHERE email= $1`, [
     email,
   ]);
@@ -47,7 +47,7 @@ const signInUser = async (email: string, password: string) => {
   }
 
   const token = jwt.sign(
-    { name: user.name, email: user.email, role: user.role },
+    { id: user.id, name: user.name, email: user.email, role: user.role },
     config.jwtSecret as string,
     {
       expiresIn: "7d",
@@ -58,6 +58,6 @@ const signInUser = async (email: string, password: string) => {
 };
 
 export const authServices = {
-  registerUser,
-  signInUser,
+  signinUser,
+  signupUser,
 };

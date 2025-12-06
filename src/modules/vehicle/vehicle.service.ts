@@ -50,7 +50,39 @@ const getVehicle = async (vehicleId: string) => {
   return result.rows[0];
 };
 
-const updateVehicle = async () => {};
+const updateVehicle = async (vehicleId: string, data: Record<string, any>) => {
+  const allowedFields = [
+    "vehicle_name",
+    "type",
+    "registration_number",
+    "daily_rent_price",
+    "availability_status",
+  ];
+  const setClauses: string[] = [];
+  const values: any[] = [];
+  let index = 1;
+
+  for (const key of Object.keys(data)) {
+    if (allowedFields.includes(key)) {
+      setClauses.push(`${key}=$${index}`);
+      values.push(data[key]);
+      index++;
+    }
+  }
+
+  if (setClauses.length === 0) throw new Error("No valid fields to update");
+
+  setClauses.push("updated_at=NOW()");
+
+  const query = `UPDATE vehicles SET ${setClauses.join(
+    ", "
+  )} WHERE id=$${index} RETURNING *  `;
+
+  values.push(vehicleId);
+
+  const result = await pool.query(query, values);
+  return result.rows[0];
+};
 
 const deleteVehicle = async () => {};
 

@@ -18,6 +18,7 @@ const getAllUsers = async () => {
 };
 
 const updateUser = async (id: string, data: Record<string, any>) => {
+  // allowing only specific fields to be updated
   const allowedFields = ["name", "phone", "role"];
   const setClauses: string[] = [];
   const values: any[] = [];

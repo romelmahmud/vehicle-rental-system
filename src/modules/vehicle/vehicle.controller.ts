@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { vehicleServices } from "./vehicle.service";
 
-// vehicle controller
 const addVehicle = async (req: Request, res: Response) => {
   try {
     const result = await vehicleServices.addVehicle(req.body);
@@ -71,7 +70,34 @@ const updateVehicle = async (req: Request, res: Response) => {
   }
 };
 
-const deleteVehicle = async (req: Request, res: Response) => {};
+const deleteVehicle = async (req: Request, res: Response) => {
+  try {
+    // checking vehicle availability_status before deleting
+    const vehicle = await vehicleServices.getVehicle(
+      req.params.vehicleId as string
+    );
+    if (vehicle.availability_status === "booked") {
+      return res.status(400).json({
+        success: false,
+        message: "Cannot delete a booked vehicle",
+      });
+    }
+
+    const result = await vehicleServices.deleteVehicle(
+      req.params.vehicleId as string
+    );
+    res.status(200).json({
+      success: true,
+      message: "Vehicle deleted successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 export const vehicleControllers = {
   addVehicle,

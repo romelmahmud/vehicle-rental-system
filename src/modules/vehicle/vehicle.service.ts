@@ -1,6 +1,5 @@
 import { pool } from "../../config/db";
 
-// vehicle service
 type VehiclePayload = {
   vehicle_name: string;
   type: string;
@@ -51,6 +50,7 @@ const getVehicle = async (vehicleId: string) => {
 };
 
 const updateVehicle = async (vehicleId: string, data: Record<string, any>) => {
+  // allowing only specific fields to be updated
   const allowedFields = [
     "vehicle_name",
     "type",
@@ -84,7 +84,16 @@ const updateVehicle = async (vehicleId: string, data: Record<string, any>) => {
   return result.rows[0];
 };
 
-const deleteVehicle = async () => {};
+const deleteVehicle = async (vehicleId: string) => {
+  const result = await pool.query(
+    `DELETE FROM vehicles WHERE id=$1 RETURNING *`,
+    [vehicleId]
+  );
+  if (result.rows.length === 0) {
+    throw new Error("Vehicle not found");
+  }
+  return result.rows[0];
+};
 
 export const vehicleServices = {
   addVehicle,

@@ -13,7 +13,7 @@ const auth = (...roles: Array<"admin" | "customer">) => {
         });
       }
       const decoded = jwt.verify(token, config.jwtSecret as string) as {
-        id: string;
+        id: number;
         name: string;
         email: string;
         role: "admin" | "customer";

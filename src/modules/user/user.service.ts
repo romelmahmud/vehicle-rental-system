@@ -17,12 +17,37 @@ const getAllUsers = async () => {
   return userData;
 };
 
-const updateUser = async (id: string, data: any) => {
-  const result = await pool.query(
-    `UPDATE users SET name=$1, email=$2, phone=$3, role=$4, updated_at=NOW() WHERE id=$5 RETURNING *`,
-    [data.name, data.email, data.phone, data.role, id]
-  );
-  return result;
+const updateUser = async (id: string, data: Record<string, any>) => {
+  const allowedFields = ["name", "email", "phone", "role"];
+  const setClauses: string[] = [];
+  const values: any[] = [];
+  let index = 1;
+
+  for (const key of Object.keys(data)) {
+    if (allowedFields.includes(key)) {
+      setClauses.push(`${key}=$${index}`);
+      values.push(data[key]);
+      index++;
+    }
+  }
+
+  if (setClauses.length === 0) throw new Error("No valid fields to update");
+
+  setClauses.push("updated_at=NOW()");
+
+  const query = `
+    UPDATE users
+    SET ${setClauses.join(", ")}
+    WHERE id=$${index}
+    RETURNING *
+  `;
+
+  values.push(id);
+
+  const result = await pool.query(query, values);
+  const updateUser = result.rows[0];
+  delete updateUser.password;
+  return updateUser;
 };
 
 export const userServices = {

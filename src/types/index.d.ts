@@ -4,7 +4,7 @@ declare global {
   namespace Express {
     interface Request extends JwtPayload {
       user?: {
-        id: string;
+        id: number;
         name: string;
         email: string;
         role: "admin" | "customer";

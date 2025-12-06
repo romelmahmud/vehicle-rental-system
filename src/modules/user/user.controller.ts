@@ -27,7 +27,7 @@ const updateUser = async (req: Request, res: Response) => {
       message: "Unauthorized: No user logged in",
     });
   }
-  const targetUserId = req.params.id;
+  const targetUserId = Number(req.params.id);
   const loggedInUser = req.user;
 
   // Checking if user updating own profile
@@ -37,8 +37,8 @@ const updateUser = async (req: Request, res: Response) => {
       message: "Customers can only update their own profile",
     });
   }
-  // Checking if admin is trying to update role
-  if (req.body.role && loggedInUser?.role !== "admin") {
+  // Checking only admin can update role
+  if (req.body.role && loggedInUser.role !== "admin") {
     return res.status(403).json({
       success: false,
       message: "Only admins can update user roles",
@@ -52,7 +52,7 @@ const updateUser = async (req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: "User updated successfully",
-      data: result.rows[0],
+      data: result,
     });
   } catch (error: any) {
     res.status(500).json({

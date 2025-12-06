@@ -39,7 +39,7 @@ const signinUser = async (email: string, password: string) => {
     throw new Error("User not found");
   }
   const user = result.rows[0];
-
+  delete user.password;
   const match = await bcrypt.compare(password, user.password);
 
   if (!match) {

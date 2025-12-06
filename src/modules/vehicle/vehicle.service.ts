@@ -36,6 +36,8 @@ const addVehicle = async (payload: VehiclePayload) => {
 
 const getAllVehicles = async () => {
   // implementation for fetching all vehicles
+  const result = await pool.query(`SELECT * FROM vehicles`);
+  return result.rows;
 };
 
 const getVehicle = async () => {};

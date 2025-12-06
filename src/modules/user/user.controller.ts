@@ -61,7 +61,27 @@ const updateUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+const deleteUser = async (req: Request, res: Response) => {
+  // Todo: Add checks if user already has a booking
+  console.log(req.params.userId);
+  try {
+    const result = await userServices.deleteUser(req.params.userId as string);
+    delete result.password;
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+      data: result,
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 export const userControllers = {
   getAllUsers,
   updateUser,
+  deleteUser,
 };

@@ -1,13 +1,14 @@
+import { Request, Response } from "express";
 import { vehicleServices } from "./vehicle.service";
 
 // vehicle controller
-const addVehicle = async (req: any, res: any) => {
+const addVehicle = async (req: Request, res: Response) => {
   try {
     const result = await vehicleServices.addVehicle(req.body);
     res.status(201).json({
       success: true,
       message: "Vehicle added successfully",
-      data: result,
+      data: result.rows[0],
     });
   } catch (error: any) {
     res.status(500).json({
@@ -17,7 +18,7 @@ const addVehicle = async (req: any, res: any) => {
   }
 };
 
-const getAllVehicles = async (req: any, res: any) => {
+const getAllVehicles = async (req: Request, res: Response) => {
   try {
     const result = await vehicleServices.getAllVehicles();
     res.status(200).json({
@@ -33,7 +34,7 @@ const getAllVehicles = async (req: any, res: any) => {
   }
 };
 
-const getVehicle = async (req: any, res: any) => {
+const getVehicle = async (req: Request, res: Response) => {
   try {
     const result = await vehicleServices.getVehicle();
   } catch (error: any) {
@@ -44,9 +45,9 @@ const getVehicle = async (req: any, res: any) => {
   }
 };
 
-const updateVehicle = async (req: any, res: any) => {};
+const updateVehicle = async (req: Request, res: Response) => {};
 
-const deleteVehicle = async (req: any, res: any) => {};
+const deleteVehicle = async (req: Request, res: Response) => {};
 
 export const vehicleControllers = {
   addVehicle,

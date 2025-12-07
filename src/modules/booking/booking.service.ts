@@ -56,7 +56,17 @@ const createBooking = async (
   return result.rows[0];
 };
 
-const getBooking = async (user_id: number) => {
+const getBooking = async (bookingId: number) => {
+  const result = await pool.query(`SELECT * FROM bookings WHERE id = $1`, [
+    bookingId,
+  ]);
+  if (result.rows.length === 0) {
+    return null;
+  }
+  return result.rows[0];
+};
+
+const getAllBookingCustomer = async (user_id: number) => {
   const result = await pool.query(`SELECT * FROM bookings WHERE user_id = $1`, [
     user_id,
   ]);
@@ -71,12 +81,17 @@ const getAllBookings = async () => {
   return result.rows;
 };
 
-const updateBooking = async (bookingId: string, data: Record<string, any>) => {
-  // implementation for updating a booking
+const updateBooking = async (bookingId: number, status: string) => {
+  const result = await pool.query(
+    `UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *`,
+    [status, bookingId]
+  );
+  return result.rows[0];
 };
 
 export const bookingServices = {
   createBooking,
+  getAllBookingCustomer,
   getBooking,
   getAllBookings,
   updateBooking,

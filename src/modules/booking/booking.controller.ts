@@ -54,7 +54,9 @@ const createBooking = async (req: Request, res: Response) => {
 const getAllBookings = async (req: Request, res: Response) => {
   try {
     if (req?.user?.role === "customer") {
-      const result = await bookingServices.getBooking(Number(req.user.id));
+      const result = await bookingServices.getAllBookingCustomer(
+        Number(req.user.id)
+      );
       console.log(result);
       if (!result) {
         return res.status(200).json({
@@ -84,16 +86,75 @@ const getAllBookings = async (req: Request, res: Response) => {
 
 const updateBooking = async (req: Request, res: Response) => {
   try {
-    const bookingId = req.params.bookingId as string;
-    const data = req.body;
-    const result = await bookingServices.updateBooking(bookingId, data);
-    res.status(200).json({
-      success: true,
-      message: "Booking updated successfully",
-      data: result,
+    const bookingId = req.params.bookingId;
+    const bookingDetails: any = await bookingServices.getBooking(
+      Number(bookingId)
+    );
+
+    if (!bookingDetails) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Booking not found" });
+    }
+
+    const now = new Date();
+    const { status } = req.body;
+
+    // Customer cancels booking
+    console.log(req.user);
+    if (req.user?.role === "customer" && status === "cancelled") {
+      if (new Date(bookingDetails.rent_start_date) <= now) {
+        return res.status(400).json({
+          success: false,
+          message: "Cannot cancel booking after start date",
+        });
+      }
+
+      const updatedBooking = await bookingServices.updateBooking(
+        Number(bookingId),
+        status
+      );
+      // Update vehicle availability
+      await vehicleServices.updateVehicle(bookingDetails.vehicle_id, {
+        availability_status: "available",
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Booking cancelled successfully",
+        data: updatedBooking,
+      });
+    }
+
+    // Admin marks booking as returned
+
+    if (req.user?.role === "admin" && status === "returned") {
+      // Update booking
+      const updatedBooking = await bookingServices.updateBooking(
+        Number(bookingId),
+        status
+      );
+
+      // Update vehicle availability
+      await vehicleServices.updateVehicle(bookingDetails.vehicle_id, {
+        availability_status: "available",
+      });
+
+      return res.status(200).json({
+        success: true,
+        message: "Booking marked as returned and vehicle is now available",
+        data: updatedBooking,
+      });
+    }
+
+    // Unauthorized or invalid request
+
+    return res.status(403).json({
+      success: false,
+      message: "You are not authorized to update this booking",
     });
   } catch (error: any) {
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
     });

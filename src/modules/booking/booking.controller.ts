@@ -53,6 +53,21 @@ const createBooking = async (req: Request, res: Response) => {
 
 const getAllBookings = async (req: Request, res: Response) => {
   try {
+    if (req?.user?.role === "customer") {
+      const result = await bookingServices.getBooking(Number(req.user.id));
+      console.log(result);
+      if (!result) {
+        return res.status(200).json({
+          success: true,
+          message: "This user has no bookings",
+        });
+      }
+      return res.status(200).json({
+        success: true,
+        message: "Booking fetched successfully",
+        data: result,
+      });
+    }
     const result = await bookingServices.getAllBookings();
     res.status(200).json({
       success: true,

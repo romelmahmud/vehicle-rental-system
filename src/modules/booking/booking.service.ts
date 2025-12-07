@@ -43,9 +43,9 @@ const createBooking = async (
       user_id,
       vehicle_id,
       JSON.stringify({
-        vehicle_name: vehicle.vehicle_name,
-        registration_number: vehicle.registration_number,
-        type: vehicle.type,
+        vehicle_name: vehicle_name,
+        registration_number: registration_number,
+        type: type,
       }),
       rent_start_date,
       rent_end_date,
@@ -56,12 +56,19 @@ const createBooking = async (
   return result.rows[0];
 };
 
-const getBooking = async (bookingId: string) => {
-  // implementation for fetching a specific booking
+const getBooking = async (user_id: number) => {
+  const result = await pool.query(`SELECT * FROM bookings WHERE user_id = $1`, [
+    user_id,
+  ]);
+  if (result.rows.length === 0) {
+    return null;
+  }
+  return result.rows;
 };
 
 const getAllBookings = async () => {
-  // implementation for fetching all bookings
+  const result = await pool.query(`SELECT * FROM bookings`);
+  return result.rows;
 };
 
 const updateBooking = async (bookingId: string, data: Record<string, any>) => {

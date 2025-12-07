@@ -43,6 +43,7 @@ const initDB = async () => {
     total_price NUMERIC NOT NULL CHECK (total_price >= 0),
     status VARCHAR(20) NOT NULL DEFAULT 'active' 
       CHECK (status IN ('active', 'returned', 'cancelled')),
+    vehicle_details JSONB NOT NULL,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
   );

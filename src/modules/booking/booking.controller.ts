@@ -1,15 +1,47 @@
 import { Request, Response } from "express";
+import { vehicleServices } from "../vehicle/vehicle.service";
 import { bookingServices } from "./booking.service";
 
 // booking controller
 const createBooking = async (req: Request, res: Response) => {
   try {
     const data = req.body;
-    const result = await bookingServices.createBooking(data);
+
+    const vehicleId = data.vehicle_id as string;
+
+    const vehicle = await vehicleServices.getVehicle(vehicleId);
+    // checking if vehicle exists
+    if (!vehicle) {
+      return res.status(404).json({
+        success: false,
+        message: "Vehicle not found",
+      });
+    }
+    // checking if vehicle is available
+
+    if (vehicle.availability_status !== "available") {
+      return res.status(400).json({
+        success: false,
+        message: "Vehicle is not available for booking",
+      });
+    }
+
+    const result = await bookingServices.createBooking(data, vehicle);
+    // update vehicle availability_status to booked
+    if (result) {
+      await vehicleServices.updateVehicle(vehicleId, {
+        availability_status: "booked",
+      });
+    }
+    const updatedResult = {
+      ...result,
+      total_price: parseFloat(result.total_price),
+    };
+
     res.status(201).json({
       success: true,
       message: "Booking created successfully",
-      data: result,
+      data: updatedResult,
     });
   } catch (error: any) {
     res.status(500).json({

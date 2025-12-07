@@ -1,4 +1,4 @@
-# Vehicle Rental Management System (Backend)
+# Vehicle Rental Management System
 
 A complete backend API for managing vehicles, bookings, and customers.
 
@@ -10,12 +10,6 @@ A complete backend API for managing vehicles, bookings, and customers.
 - PostgreSQL
 - Bcrypt
 - JWT (jsonwebtoken)
-
----
-
-## Live Deployment
-
-**API Base URL:**
 
 ---
 
@@ -52,9 +46,9 @@ npm install
 set up environment variables on .env file
 
 ```
-CONNECTION_STR=postgresql/noendb_secret
-PORT=5000
-JWT_SECRET=secret
+CONNECTION_STR=postgresql/noendb_connetion_string
+PORT=your_port
+JWT_SECRET=your_secret
 ```
 
 ### **Run the Server**
@@ -65,10 +59,10 @@ npm run dev
 
 ## GitHub Repository
 
-🔗 https://github.com/romelmahmud/vehicle-rental-system
+https://github.com/romelmahmud/vehicle-rental-system
 
 ---
 
 ## Live URL
 
-🔗
+https://assingment-2-five.vercel.app/

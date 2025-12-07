@@ -32,5 +32,20 @@ const initDB = async () => {
     updated_at TIMESTAMP DEFAULT NOW()
   );
 `);
+
+  await pool.query(`
+  CREATE TABLE IF NOT EXISTS bookings(
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    vehicle_id INT NOT NULL REFERENCES vehicles(id) ON DELETE CASCADE,
+    rent_start_date DATE NOT NULL,
+    rent_end_date DATE NOT NULL CHECK (rent_end_date > rent_start_date),
+    total_price NUMERIC NOT NULL CHECK (total_price >= 0),
+    status VARCHAR(20) NOT NULL DEFAULT 'active' 
+      CHECK (status IN ('active', 'returned', 'cancelled')),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+  );
+`);
 };
 export default initDB;

@@ -5,11 +5,15 @@ import { config } from "../config";
 const auth = (...roles: Array<"admin" | "customer">) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const token = req.headers.authorization;
+      // const token = req.headers.authorization;
+      const authHeader = req.headers.authorization || "";
+
+      const token = authHeader.split(" ")[1];
+
       if (!token) {
         return res.status(401).json({
           success: false,
-          message: "Access denied: No token provided",
+          message: "Unauthorized: No token provided",
         });
       }
       const decoded = jwt.verify(token, config.jwtSecret as string) as {
